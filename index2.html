@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>grid clock</title>
+	<style>
+		body{
+			min-height: 100vh;
+			background-color: #f2f4f5;
+			font-family: arial, helvetica, sans-serif;
+		}
+		.grid{
+			display: grid;
+			grid: repeat(24, 1fr) / repeat(60, 1fr);
+			min-height: 100vh;
+			align-items: center;
+		}
+		.grid-item{
+			position: relative;
+			font-size: 16px;
+			min-width: 0;
+			aspect-ratio: 1;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.grid-item::after{
+			content: "";
+			position: absolute;
+			inset: 0;
+			background-image: linear-gradient(#a5c900, #a5c900);
+			background-repeat: no-repeat;
+			background-position: center;
+			background-size: 10% 2px;
+			opacity: 0;
+			pointer-events: none;
+		}
+		.grid-item.active {
+    		color: #1b2d6e;
+		}
+		.grid-item.active:hover ~ .grid-item::after {
+			opacity: 1;
+		}
+	</style>
+</head>
+<body>
+	<div class="grid"></div>
+<script>
+
+const grid = document.querySelector(".grid");
+
+// create all grid items
+for (let hour = 0; hour <= 24; hour++) {
+	for (let minute = 0; minute < 60; minute++) {
+		const cell = document.createElement("div");
+
+		cell.className = "grid-item";
+		cell.id = `cell-${hour}-${minute}`;
+
+		grid.appendChild(cell);
+	}
+}
+
+let previousCell = null;
+
+function updateClock() {
+	const now = new Date();
+	const hour = now.getHours();
+	const minute = now.getMinutes();
+	const second = now.getSeconds();
+
+// clear previous cell
+	if (previousCell) {
+		previousCell.classList.remove("active");
+		previousCell.textContent = "";
+	}
+
+// find current cell
+	const currentCell = document.querySelector(
+    	`#cell-${hour}-${minute}`
+	);
+
+// show current second (makes it active)
+	currentCell.textContent = second;
+	currentCell.classList.add("active");
+	previousCell = currentCell;
+}
+
+updateClock();
+setInterval(updateClock, 1000);
+
+</script>
+</body>
+</html>
